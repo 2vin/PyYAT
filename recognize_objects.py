@@ -17,7 +17,7 @@ class recognize_objects:
 		self.ln = self.net.getLayerNames()
 		self.ln = [self.ln[i[0] - 1] for i in self.net.getUnconnectedOutLayers()]
 
-	def process_frame(self, frame, show = True):
+	def process_frame(self, frame, all_labels, show = True):
 
 		frame_copy = frame.copy()
 
@@ -76,16 +76,6 @@ class recognize_objects:
 				cv2.rectangle(frame_copy, (x, y), (x + w, y + h), color, 2)
 				text = "{}: {:.4f}".format(self.classes[classIDs[i]], confidences[i])
 				cv2.putText(frame_copy, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX,0.5, color, 2)
-
-				# Reading from labels.csv ----------------------
-				all_labels = []
-				with open('labels.csv', mode ='r')as file:
-					# reading the CSV file
-					csvFile = csv.reader(file)
-					# displaying the contents of the CSV file
-					for lines in csvFile:
-						all_labels.append(lines)
-				#-----------------------------------------------
 
 				if self.classes[classIDs[i]] in all_labels:
 					results.append([self.classes[classIDs[i]],[(x, y), (x + w, y + h)]])

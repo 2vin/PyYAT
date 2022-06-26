@@ -18,14 +18,22 @@ output_folder = parser['Settings']['output_folder']
 data_folder = data_folder
 annotation_index = int(annotation_index)
 
+all_labels = []
+
 ob = recognize_objects("./models/yolov3.weights", "./models/yolov3.cfg","./models/coco.names")
+
+colors = [(255, 0, 0), (255, 255, 0), (0, 255, 0), (0, 255, 255), (0, 0, 255), (255, 0, 255),
+			(255, 100, 0), (255, 255, 100), (0, 255, 100), (50, 255, 255), (50, 0, 255), (255, 50, 255),
+			(255, 50, 0), (255, 255, 50), (100, 255, 0), (100, 255, 255), (0, 100, 255), (255, 100, 255),
+			(255, 0, 100), (255, 255, 150), (50, 255, 50), (150, 255, 255), (0, 50, 255), (255, 150, 255)
+			]  
+
 
 def get_all_images(dir):
 	list_of_images = []
 	for x in os.listdir(dir):
-	    if x.endswith(".png"):
+	    if x.endswith(".png") or x.endswith(".jpeg")  or x.endswith(".jpg") :
 	        list_of_images.append(str(dir)+str(x))
-
 	return list_of_images
 
 def get_one_image(list_of_images, annotation_index):
@@ -36,31 +44,38 @@ def show_image(frame):
 	cv2.waitKey(0)
 
 def list_of_labels():
-	all_labels = []
-	with open(label_file, mode ='r')as file:
-		# reading the CSV file
-		csvFile = csv.reader(file)
-		# displaying the contents of the CSV file
-		for lines in csvFile:
-			all_labels.append(lines)
+	if all_labels == []:
+		with open(label_file, mode ='r')as file:
+			# reading the CSV file
+			csvFile = csv.reader(file)
+			# displaying the contents of the CSV file
+			for lines in csvFile:
+				lines = str(lines)
+				lines = lines.replace("['", "")
+				lines = lines.replace("']", "")
+				all_labels.append(lines)
 
 	return all_labels
 
 def get_label():
+	ind= 1
 	labels = ""
 	with open(label_file, mode ='r')as file:
 		# reading the CSV file
 		csvFile = csv.reader(file)
 		# displaying the contents of the CSV file
 		for lines in csvFile:
-			# print(lines)
-			labels = labels + " \"" + lines[0] + "\" \" " + lines[1] + "\""
+			lines = str(lines)
+			lines = lines.replace("['", "")
+			lines = lines.replace("']", "")
+			labels = labels + " \"" + str(ind) + "\" \" " + str(lines) + "\""
+			ind = ind + 1
 
 	return(os.popen("zenity --list  --height 500 --title=\"Labels\" --column=\"Index\" --column=\"Label\""+labels).read())
 
 
-def pre_annotate(frame):
-	ob_results = ob.process_frame(frame, False)
+def pre_annotate(frame, all_labels):
+	ob_results = ob.process_frame(frame, all_labels, False)
 	return ob_results
 
 
@@ -105,7 +120,7 @@ stop_point = []
 temp_point = []
 mouse_point = [0,0]
 
-current_label = None
+current_label = 'person'
 def get_mouse_click(event, x, y, flags, param):
 	global is_clicked, last_click
 	global start_point, stop_point, temp_point, mouse_point
@@ -146,7 +161,8 @@ def draw_boxes(frame, yolo_boxes, frame_orig):
 	while keep_running != 0:
 
 		for name,boxes in yolo_boxes:
-			cv2.rectangle(frame, (boxes[0][0],boxes[0][1]) , (boxes[1][0],boxes[1][1]), (255, 255, 0), 2)
+			cv2.rectangle(frame, (boxes[0][0],boxes[0][1]) , (boxes[1][0],boxes[1][1]), colors[list_of_labels().index(name)], 2)
+			cv2.putText(frame, str(name), (boxes[0][0],boxes[0][1]-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, colors[list_of_labels().index(name)], 1, cv2.LINE_AA)
 
 		frame_temp = frame.copy()
 
@@ -165,16 +181,17 @@ def draw_boxes(frame, yolo_boxes, frame_orig):
 			ch = cv2.waitKey(10)
 
 		if start_point and temp_point:
-			print(start_point, temp_point)
+			# print(start_point, temp_point)
 			cv2.rectangle(frame_temp, (start_point[0],start_point[1]) , (temp_point[0], temp_point[1]), (255, 0, 0), 2)
 			cv2.imshow("Image Annotations", frame_temp)
 			ch = cv2.waitKey(10)
 
 		if start_point and stop_point:
-			print(start_point, stop_point)
-			cv2.rectangle(frame, (start_point[0],start_point[1]), (stop_point[0], stop_point[1]), (255, 0, 255), 2)
+			# If there is atleast 10 pixels of distance movement
+			if abs(start_point[0] - stop_point[0]) > 10:
+				cv2.rectangle(frame, (start_point[0],start_point[1]), (stop_point[0], stop_point[1]), (255, 0, 255), 2)
 
-			yolo_boxes.append([current_label, [(start_point[0],start_point[1]),(stop_point[0], stop_point[1])]])
+				yolo_boxes.append([current_label, [(start_point[0],start_point[1]),(stop_point[0], stop_point[1])]])
 
 			# Reset points for next box
 			start_point =[]
@@ -205,7 +222,7 @@ def draw_boxes(frame, yolo_boxes, frame_orig):
 
 		elif ch == ord('l'):
 			all_labels = list_of_labels()
-			current_label = all_labels[int(get_label())-1][1]
+			current_label = all_labels[int(get_label())-1]
 			print("Label: ", current_label)
 
 		elif ch == 27: # ESC to exit
@@ -215,12 +232,15 @@ def draw_boxes(frame, yolo_boxes, frame_orig):
 
 	cv2.destroyAllWindows()
 
+
+# Code starts from here
 list_of_images = get_all_images(data_folder)
 
 for im in range(len(list_of_images)):
 	frame = get_one_image(list_of_images, annotation_index)
 	frame_orig = frame.copy()
 
-	yolo_boxes = pre_annotate(frame)
+	yolo_boxes = pre_annotate(frame, list_of_labels())
+
 	# show_image(frame)
 	draw_boxes(frame, yolo_boxes, frame_orig)
