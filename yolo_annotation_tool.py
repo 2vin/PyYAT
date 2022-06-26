@@ -6,8 +6,17 @@ import csv
 from recognize_objects import recognize_objects
 
 
-data_folder = "./data/"
-annotation_index = 0
+import configparser
+parser = configparser.ConfigParser()
+parser.read('config.ini')
+
+data_folder = parser['Settings']['data_folder']
+annotation_index = parser['Settings']['annotation_index']
+label_file = parser['Settings']['label_file']
+output_folder = parser['Settings']['output_folder']
+
+data_folder = data_folder
+annotation_index = int(annotation_index)
 
 ob = recognize_objects("./models/yolov3.weights", "./models/yolov3.cfg","./models/coco.names")
 
@@ -28,7 +37,7 @@ def show_image(frame):
 
 def list_of_labels():
 	all_labels = []
-	with open('labels.csv', mode ='r')as file:
+	with open(label_file, mode ='r')as file:
 		# reading the CSV file
 		csvFile = csv.reader(file)
 		# displaying the contents of the CSV file
@@ -39,7 +48,7 @@ def list_of_labels():
 
 def get_label():
 	labels = ""
-	with open('labels.csv', mode ='r')as file:
+	with open(label_file, mode ='r')as file:
 		# reading the CSV file
 		csvFile = csv.reader(file)
 		# displaying the contents of the CSV file
@@ -75,12 +84,17 @@ def convert_boxes_to_yolo(yolo_boxes, frame):
 	return (yolo_label)
 
 def save_annotation(frame, labels):
-	output_dir = "./output/"
-	cv2.imwrite(output_dir+"_temp.jpg", frame)
-	file=open(output_dir+"_temp.txt",'w')
+	output_dir = output_folder
+	cv2.imwrite(output_dir+str(annotation_index)+".jpg", frame)
+	file=open(output_dir+str(annotation_index)+".txt",'w')
 	for items in labels:
 	    file.writelines(items+'\n')
 	file.close()
+
+	parser.set('Settings', 'annotation_index', str(annotation_index))
+	fp=open('config.ini','w')
+	parser.write(fp)
+	fp.close()
 
 
 is_clicked = 0

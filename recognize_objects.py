@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import csv
 
 class recognize_objects:
 	def __init__(self, yolo_model_weights, yolo_model_cfg, coco_names):
@@ -76,7 +77,17 @@ class recognize_objects:
 				text = "{}: {:.4f}".format(self.classes[classIDs[i]], confidences[i])
 				cv2.putText(frame_copy, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX,0.5, color, 2)
 
-				if self.classes[classIDs[i]] in ["person","car","fire hydrant"]:
+				# Reading from labels.csv ----------------------
+				all_labels = []
+				with open('labels.csv', mode ='r')as file:
+					# reading the CSV file
+					csvFile = csv.reader(file)
+					# displaying the contents of the CSV file
+					for lines in csvFile:
+						all_labels.append(lines)
+				#-----------------------------------------------
+
+				if self.classes[classIDs[i]] in all_labels:
 					results.append([self.classes[classIDs[i]],[(x, y), (x + w, y + h)]])
 
 		if show:
