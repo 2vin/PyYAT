@@ -31,9 +31,9 @@ python yolo_annotation_tool.py
      <td>Image 3</td>
   </tr>
   <tr>
-    <td><img src="https://github.com/2vin/PyYAT/blob/master/data/1.jpg" width=320 height=180></td>
-    <td><img src="https://github.com/2vin/PyYAT/blob/master/data/2.jpg" width=320 height=180></td>
-    <td><img src="https://github.com/2vin/PyYAT/blob/master/data/3.jpg" width=320 height=180></td>
+    <td><img src="https://github.com/2vin/PyYAT/blob/master/data/1.jpg" width=320 height=240></td>
+    <td><img src="https://github.com/2vin/PyYAT/blob/master/data/2.jpg" width=320 height=240></td>
+    <td><img src="https://github.com/2vin/PyYAT/blob/master/data/3.jpeg" width=320 height=240></td>
   </tr>
  </table>
 
