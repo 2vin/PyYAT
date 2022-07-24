@@ -90,10 +90,11 @@ def convert_boxes_to_yolo(yolo_boxes, frame):
 		w = box[1][0] - box[0][0]
 		h = box[1][1] - box[0][1]
 
-		xc = (x + w/2.0) / frame.shape[1]
-		yc = (y + h/2.0) / frame.shape[0]
-		wc = w / frame.shape[1]
-		hc = h / frame.shape[0]
+		print( frame.shape)
+		xc = float((x + w/2.0) / frame.shape[1])
+		yc = float((y + h/2.0) / frame.shape[0])
+		wc = float(w / frame.shape[1])
+		hc = float(h / frame.shape[0])
 
 		yolo_label.append(' '.join([str(all_labels.index(name)), str(xc), str(yc), str(wc), str(hc)]))
 	return (yolo_label)
