@@ -177,8 +177,9 @@ def draw_boxes(frame, yolo_boxes, frame_orig):
 		if mouse_point[0] > 0 and mouse_point[0] < frame_temp.shape[1] and mouse_point[1] > 0 and mouse_point[1] < frame_temp.shape[0]:
 			cv2.line(frame_temp, (mouse_point[0], 0), (mouse_point[0], frame_temp.shape[0]), (0,255,255), 1)
 			cv2.line(frame_temp, (0, mouse_point[1]), (frame_temp.shape[1], mouse_point[1]), (0,255,255), 1)
-			
-			cv2.putText(frame_temp, str(current_label), (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2, cv2.LINE_AA)
+
+			cv2.rectangle(frame, (0,0), (150,15), (0, 0, 0), -1)
+			cv2.putText(frame_temp, str(current_label), (5,10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
 
 			cv2.imshow("Image Annotations", frame_temp)
 			ch = cv2.waitKey(10)
@@ -259,7 +260,7 @@ for im in range(len(list_of_images)):
 	# resize image
 	frame = cv2.resize(frame, dsize)
 
-	yolo_boxes = pre_annotate(frame,list_of_labels())
+	yolo_boxes = pre_annotate(frame,['person', 'car', 'cat', 'dog', 'cow', 'traffic light'])#list_of_labels())
 
 	# show_image(frame)
 	draw_boxes(frame, yolo_boxes, frame_orig)
