@@ -95,7 +95,7 @@ def convert_boxes_to_yolo(yolo_boxes, frame):
 		wc = w / frame.shape[1]
 		hc = h / frame.shape[0]
 
-		yolo_label.append(' '.join([str(name), str(xc), str(yc), str(wc), str(hc)]))
+		yolo_label.append(' '.join([str(all_labels.index(name)), str(xc), str(yc), str(wc), str(hc)]))
 	return (yolo_label)
 
 def save_annotation(frame, labels):
@@ -105,6 +105,8 @@ def save_annotation(frame, labels):
 	for items in labels:
 	    file.writelines(items+'\n')
 	file.close()
+
+	print("Annotations saved as: ", labels)
 
 	parser.set('Settings', 'annotation_index', str(annotation_index))
 	fp=open('config.ini','w')
@@ -216,8 +218,14 @@ def draw_boxes(frame, yolo_boxes, frame_orig):
 
 		elif ch == ord('p'):
 			print("Previous Frame")
+			# if annotation_index > 0:
+			# 	annotation_index = annotation_index-1
+			break
+
+		elif ch == ord('x'):
+			print("Skip Frame")
 			if annotation_index > 0:
-				annotation_index = annotation_index-1
+				annotation_index = annotation_index+1
 			break
 
 		elif ch == ord('l'):
@@ -240,7 +248,17 @@ for im in range(len(list_of_images)):
 	frame = get_one_image(list_of_images, annotation_index)
 	frame_orig = frame.copy()
 
-	yolo_boxes = pre_annotate(frame, list_of_labels())
+	scale_percent = 70.0
+	width = int(frame.shape[1] * scale_percent / 100)
+	height = int(frame.shape[0] * scale_percent / 100)
+
+	# dsize
+	dsize = (width, height)
+
+	# resize image
+	frame = cv2.resize(frame, dsize)
+
+	yolo_boxes = pre_annotate(frame,list_of_labels())
 
 	# show_image(frame)
 	draw_boxes(frame, yolo_boxes, frame_orig)
