@@ -4,6 +4,15 @@
 # PyYAT
 Semi-Automatic Yolo Annotation Tool In Python
 
+<table>
+  <tr>
+    <td>PyYAT</td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/2vin/PyYAT/blob/master/data/3.jpeg" width=640 height=480></td>
+  </tr>
+ </table>
+ 
 Using this tool, we can annotate bounding boxes for image annotation in YOLO format. 
 It uses YOLOv3-608 weights to pre-annotate the bounding boxes in images. It reduces time and efforts in annotating large datasets by upto 90%.
 
