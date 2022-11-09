@@ -9,7 +9,7 @@ Semi-Automatic Yolo Annotation Tool In Python
     <td>PyYAT</td>
   </tr>
   <tr>
-    <td><img src="https://github.com/2vin/PyYAT/blob/master/data/3.jpeg" width=640 height=480></td>
+    <td><img src="https://user-images.githubusercontent.com/38634222/175885482-baf10681-6ef5-45b5-873d-c4304e8fea73.png" width=640 height=480></td>
   </tr>
  </table>
  
