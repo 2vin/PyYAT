@@ -15,7 +15,11 @@ class recognize_objects:
 
 		self.net = cv2.dnn.readNetFromDarknet(self.cfg, self.weights)
 		self.ln = self.net.getLayerNames()
-		self.ln = [self.ln[i[0] - 1] for i in self.net.getUnconnectedOutLayers()]
+		
+		if cv2.__version__ == '4.6.0':
+           	    self.ln = [self.ln[i - 1] for i in self.net.getUnconnectedOutLayers()]
+        	else:
+            	    self.ln = [self.ln[i[0] - 1] for i in self.net.getUnconnectedOutLayers()]
 
 	def process_frame(self, frame, all_labels, show = True):
 
@@ -87,7 +91,11 @@ class recognize_objects:
 			if len(idxs) > 0:
 				print("Objects detected in this frame:\n")
 				for i in idxs.flatten():
-					print(self.classes[classIDs[i]])
+				    if cv2.__version__ == '4.6.0':
+                    		        i = i
+                		    else:
+                    			i = i[0]
+				    print(self.classes[classIDs[i]])
 				print("\n###################################\n")
 
 		# If it is person, cat, dog detected
