@@ -26,6 +26,8 @@ It uses YOLOv3-608 weights to pre-annotate the bounding boxes in images. It redu
 * '/output' : Sample of output files after annotation.
 
 ## Usage:
+requires zenity (dialog boxes for the command-line) to work
+
 ```
 python yolo_annotation_tool.py
 ```
