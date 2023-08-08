@@ -4,6 +4,7 @@ import subprocess
 import threading
 import csv
 from recognize_objects import recognize_objects
+from urllib.request import urlretrieve
 
 
 import configparser
@@ -20,7 +21,15 @@ annotation_index = int(annotation_index)
 
 all_labels = []
 
-ob = recognize_objects("./models/yolov3.weights", "./models/yolov3.cfg","./models/coco.names")
+weights_file = "./models/yolov3.weights"
+if not os.path.isfile(weights_file):
+	print("Downloading weights file...")
+	urlretrieve("https://pjreddie.com/media/files/yolov3.weights", weights_file)
+
+ob = recognize_objects(weights_file, "./models/yolov3.cfg","./models/coco.names")
+
+
+#if 
 
 colors = [(255, 0, 0), (255, 255, 0), (0, 255, 0), (0, 255, 255), (0, 0, 255), (255, 0, 255),
 			(255, 100, 0), (255, 255, 100), (0, 255, 100), (50, 255, 255), (50, 0, 255), (255, 50, 255),
