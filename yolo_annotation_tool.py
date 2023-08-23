@@ -32,8 +32,8 @@ colors = [(255, 0, 0), (255, 255, 0), (0, 255, 0), (0, 255, 255), (0, 0, 255), (
 def get_all_images(dir):
 	list_of_images = []
 	for x in os.listdir(dir):
-	    if x.endswith(".png") or x.endswith(".jpeg")  or x.endswith(".jpg") :
-	        list_of_images.append(str(dir)+str(x))
+		if x.endswith(".png") or x.endswith(".jpeg")  or x.endswith(".jpg") :
+			list_of_images.append(str(dir)+str(x))
 	return list_of_images
 
 def get_one_image(list_of_images, annotation_index):
@@ -80,7 +80,7 @@ def pre_annotate(frame, all_labels):
 
 
 def convert_list_to_str(lst):
-    return str(lst).translate(None, '[],\'')
+	return str(lst).translate(None, '[],\'')
 
 def convert_boxes_to_yolo(yolo_boxes, frame):
 	yolo_label = []
@@ -104,7 +104,7 @@ def save_annotation(frame, labels):
 	cv2.imwrite(output_dir+str(annotation_index)+".jpg", frame)
 	file=open(output_dir+str(annotation_index)+".txt",'w')
 	for items in labels:
-	    file.writelines(items+'\n')
+		file.writelines(items+'\n')
 	file.close()
 
 	print("Annotations saved as: ", labels)
